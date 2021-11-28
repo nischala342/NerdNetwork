@@ -3,13 +3,6 @@ const app = express()
 const PORT = 5000
 const mongoose = require('mongoose')
 const {MONGOURI} = require('./keys')
-require('./models/user')
-
-
-app.use(express.json())
-app.use(require('./routes/auth'))
-
-
 
 
 mongoose.connect(MONGOURI)
@@ -20,6 +13,15 @@ mongoose.connection.on('error',(err)=>{
     console.log("not connected",err)
 
 })
+
+require("./models/user");
+require("./models/post")
+
+app.use(express.json());
+app.use(require("./routes/auth"));
+app.use(require("./routes/post"));
+
+
 
 app.get('/about',(req,res)=>{
     res.send("about page")
