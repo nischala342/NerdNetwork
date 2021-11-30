@@ -1,0 +1,23 @@
+a{
+  color: black !important
+}
+
+.gallery{
+  display: flex;
+  flex-wrap:wrap;
+  justify-content: space-around;
+}
+
+
+.home-card{
+  max-width: 500px;
+  height: max-conntent;
+  margin: 26px auto;
+}
+
+#toast-container{
+  top: 30px !important;
+  right: 40px !important;
+  left: auto !important
+
+}
