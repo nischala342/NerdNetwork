@@ -34,6 +34,7 @@ const SignUp = () => {
           } else {
             M.toast({ html: data.message, classes: "green" });
             history.push("/Login");
+            window.location.reload();
           }
         });
       }
