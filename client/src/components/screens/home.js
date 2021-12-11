@@ -1,20 +1,42 @@
-import React from 'react' 
+import React,{useState,useEffect} from 'react' 
+import { UserContext } from '../../App'
+import {Link} from 'react-router-dom'
 import img from './signin-image.jpg'
 const Home  = () =>{
-    return (
+  const [data,setData] = useState([])  
+  useEffect(()=>{
+    fetch('/allposts',{
+      headers:{
+        "Authorization":"Bearer " +localStorage.getItem("jwt")
+      }
+    }).then(res=>res.json())
+       .then(result=>{
+      //console.log(result)
+      setData(result.posts)
+    })
+  },[])
+  return (
       <div className="home">
-        <div className="card home-card">
-          <h5>Name</h5>
+        {
+          data.map(item=>{
+            return(
+              <div className="card home-card" key={item._id}>
+          <h5>{item.postedBy.name}</h5>
           <div className="card-image">
-            <img src="https://images.pexels.com/photos/799443/pexels-photo-799443.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"/>
+            <img src={item.photo}/>
           </div>
           <i className='material-icons' style={{color:'black'}}>thumb_up</i>
-          <h6>Title</h6>
-          <p>Description</p>
+          <h6>{item.title}</h6>
+          <p>{item.body}</p>
           <input type="text" placeholder = "add a comment"/>
         </div>
-      </div>
-    );
+
+            )
+          })
+        }
+        </div>
+    )
+    
 }
 
 export default Home 

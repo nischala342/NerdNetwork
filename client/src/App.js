@@ -1,7 +1,7 @@
 import React,{useEffect,createContext,useReducer,useContext} from 'react';
 import NavBar from './components/Navbar'
 import "./App.css"
-import {BrowserRouter,Route,Routes} from 'react-router-dom'
+import {BrowserRouter,Route,Routes,useNavigate} from 'react-router-dom'
 import Home from './components/screens/home'
 import Profile from "./components/screens/profile";
 import Login from "./components/screens/Login";
@@ -13,19 +13,29 @@ import { initialState ,reducer} from './reducers/userReducer'
 export const UserContext = createContext()
 
 const Routing =()=>{
-  //const history = useHistory()
+  const history = useNavigate()
   const {state,dispatch} = useContext(UserContext)
   useEffect(()=>{
     const user = JSON.parse(localStorage.getItem("user"))
     if(user){
       dispatch({type:"USER",payload:user})
-      history.push('/')
-      window.location.reload();
+      history('/')
+      //window.location.reload();
     }else{
-      history.push('/login')
-      window.location.reload();
+      history('/login')
+      //window.location.reload();
     }
   },[])
+return (
+         <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/Login" element={<Login />} />
+          <Route path="/SignUp" element={<SignUp />} />
+          <Route path="/Profile" element={<Profile />} />
+          <Route path="/CreatePost" element={<CreatePost />} />
+        </Routes>   
+)
+
 }
 
 
@@ -37,13 +47,7 @@ function App() {
     <UserContext.Provider value={{ state, dispatch }}>
       <BrowserRouter>
         <NavBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/SignUp" element={<SignUp />} />
-          <Route path="/Profile" element={<Profile />} />
-          <Route path="/CreatePost" element={<CreatePost />} />
-        </Routes>
+        <Routing/>
       </BrowserRouter>
     </UserContext.Provider>
   );
