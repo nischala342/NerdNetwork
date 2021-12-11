@@ -1,16 +1,22 @@
-import React, {useState} from "react";
+import React, {useState,useContext,useHistory} from "react";
 import img from './signin-image.jpg'
 import { Link } from "react-router-dom";
 import history from "./history";
+import { createBrowserHistory } from "history";
 import M from "materialize-css";
-
+import {} from '../../App'
+  import { UserContext } from "../../App";
 const Login = () => {
+  const {state,dispatch} = useContext(UserContext)
+  
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const PostData = () => {
-    if ( 
-      !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.
-      test(email)){
+    if (
+      !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+        email
+      )
+    ) {
       M.toast({ html: "Invalid Email Address", classes: "red" });
     } else {
       fetch("http://localhost:3000/Login", {
@@ -20,7 +26,7 @@ const Login = () => {
         },
         body: JSON.stringify({
           password,
-          email
+          email,
         }),
       })
         .then((res) => res.json())
@@ -29,6 +35,11 @@ const Login = () => {
           if (data.error) {
             M.toast({ html: data.error, classes: "red" });
           } else {
+            localStorage.setItem("jwt", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            
+            dispatch({type:"USER",payload:data.user})
+            
             M.toast({ html: "Logged in succesfully!! ", classes: "green" });
             history.push("/");
             window.location.reload();

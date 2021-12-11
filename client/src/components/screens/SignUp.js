@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import M from 'materialize-css';
 import history from './history';
+import { createBrowserHistory } from "history";
 const SignUp = () => {
   const [name,setName] = useState("")
   const [password, setPassword] = useState("");
