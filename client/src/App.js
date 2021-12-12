@@ -10,6 +10,7 @@ import CreatePost from "./components/screens/CreatePost";
 import history from "./components/screens/history";
 import UserProfile from "./components/screens/UserProfile"
 import { initialState ,reducer} from './reducers/userReducer'
+import SubscribedUserPosts from "./components/screens/SubscribedUserPosts"
 
 export const UserContext = createContext()
 
@@ -29,12 +30,14 @@ const Routing =()=>{
   },[])
 return (
   <Routes>
-    <Route path="/" element={<Home />} />
+    <Route path="/" element={<SubscribedUserPosts />} />
     <Route path="/Login" element={<Login />} />
     <Route path="/SignUp" element={<SignUp />} />
     <Route exact path="/Profile" element={<Profile />} />
-    <Route path="/CreatePost" element={<CreatePost/>} />
-    <Route path="/Profile/:userid" element={<UserProfile/>} />
+    <Route path="/CreatePost" element={<CreatePost />} />
+    <Route path="/Profile/:userid" element={<UserProfile />} />
+    <Route path="/SubscribedPosts" element={<SubscribedUserPosts />} />
+    <Route path="/Explore" element={<Home />} />
   </Routes>
 );
 

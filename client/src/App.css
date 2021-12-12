@@ -21,3 +21,7 @@ a{
   left: auto !important
 
 }
+
+.material-icons:hover{
+  cursor: pointer;
+}

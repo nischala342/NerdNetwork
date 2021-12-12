@@ -3,6 +3,7 @@ import { UserContext } from "../../App";
 const Profile = () => {
   const[mypics,setPics] = useState([])
   const {state,dispatch} = useContext(UserContext)
+  const [image, setImage] = useState("");
   useEffect(() => {
     fetch('/myposts', {
       headers:{
@@ -14,6 +15,47 @@ const Profile = () => {
       setPics(result.mypost)
     })
   },[])
+  useEffect(() => {
+     if(image){
+        const data = new FormData()
+        data.append("file",image)
+        data.append("upload_preset","social")
+        data.append("cloud_name", "dvyahklcf");
+        fetch("https://api.cloudinary.com/v1_1/dvyahklcf/image/upload", {
+          method: "post",
+          body: data,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            fetch("/updatepic", {
+              method: "put",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("jwt"),
+              },
+              body: JSON.stringify({
+                pic: data.url,
+              }),
+            })
+              .then((res) => res.json())
+              .then((result) => {
+                //console.log(result)
+                localStorage.setItem(
+                  "user",
+                  JSON.stringify({ ...state, pic: result.pic })
+                );
+                dispatch({ type: "UPDATEPIC", payload: result.pic });
+                window.location.reload();
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+       }
+    },[image])
+    const updatePhoto = (file)=>{
+        setImage(file)
+  }
   return (
     <div style={{ maxWidth: "550px", margin: "0px auto" }}>
       <div
@@ -30,13 +72,13 @@ const Profile = () => {
         >
           <div>
             <img
-              src="https://static.remove.bg/remove-bg-web/a76316286d09b12be1ebda3b400e3f44716c24d0/assets/start-1abfb4fe2980eabfbbaaa4365a0692539f7cd2725f324f904565a9a744f8e214.jpg"
+              src={state ? state.pic : "loading"}
               style={{ width: "160px", height: "160px", borderRadius: "80px" }}
             />
           </div>
           <div>
-            <h4>{state? state.name:"loading"}</h4>
-            <h5>email</h5>
+            <h4>{state ? state.name : "loading"}</h4>
+            <h5>{state ? state.email : "loading"}</h5>
             <div
               style={{
                 display: "flex",
@@ -44,17 +86,20 @@ const Profile = () => {
                 width: "108%",
               }}
             >
-              <h6>posts</h6>
-              <h6>followers</h6>
-              <h6>following</h6>
+              <h6>{mypics.length}posts</h6>
+              <h6>{state ? state.connectors.length : "0"} connectors</h6>
+              <h6>{state ? state.connectees.length : "0"} connectees</h6>
             </div>
           </div>
         </div>
 
         <div className="file-field input-field" style={{ margin: "10px" }}>
-          <div className="btn #64b5f6 blue darken-1">
-            <span>Update pic</span>
-            <input type="file" />
+          <div className="btn">
+            <span>Update Profile Picture</span>
+            <input
+              type="file"
+              onChange={(e) => updatePhoto(e.target.files[0])}
+            />
           </div>
           <div className="file-path-wrapper">
             <input className="file-path validate" type="text" />
@@ -69,7 +114,7 @@ const Profile = () => {
               className="item"
               src={item.photo}
               alt={item.title}
-               style={{ width: "160px", height: "160px"}}
+              style={{ width: "160px", height: "160px" }}
             />
           );
         })}

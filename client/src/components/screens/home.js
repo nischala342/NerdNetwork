@@ -2,21 +2,21 @@ import React,{useState,useEffect, useContext} from 'react'
 import { UserContext } from '../../App'
 import {Link} from 'react-router-dom'
 import img from './signin-image.jpg'
-import {Link} from react-router-dom
 
 const Home  = () =>{
   const [data,setData] = useState([])  
   const {state,dispatch} = useContext(UserContext)
   useEffect(()=>{
-    fetch('/allposts',{
-      headers:{
-        "Authorization":"Bearer " +localStorage.getItem("jwt")
-      }
-    }).then(res=>res.json())
-       .then(result=>{
-      //console.log(result)
-      setData(result.posts)
+    fetch("/allposts", {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
     })
+      .then((res) => res.json())
+      .then((result) => {
+        console.log(result)
+        setData(result.posts);
+      });
   },[])
 
   const likePost = (id) => {
@@ -126,6 +126,15 @@ const Home  = () =>{
           data.map(item=>{
             return (
               <div className="card home-card" key={item._id}>
+                  <img
+                    src={item.postedBy.pic}
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "40px",
+                    }}
+                  />
+                
                 <h5 style={{ padding: "5px" }}>
                   <Link
                     to={
@@ -164,8 +173,9 @@ const Home  = () =>{
                     onClick={() => {
                       unlikePost(item._id);
                     }}
+                    style={{ color: "blue" }}
                   >
-                    thumb_down
+                    thumb_up
                   </i>
                 ) : (
                   <i
@@ -173,6 +183,7 @@ const Home  = () =>{
                     onClick={() => {
                       likePost(item._id);
                     }}
+                    style={{ color: "black" }}
                   >
                     thumb_up
                   </i>
@@ -182,9 +193,17 @@ const Home  = () =>{
                   return (
                     <h6 key={record._id}>
                       <span style={{ fontWeight: "500" }}>
-                        <b>{record.postedBy.name}</b>
-                      </span>{" "}
-                      <i>{record.text}</i>
+                          <img
+                            src={record.postedBy.pic}
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              borderRadius: "30px",
+                            }}
+                          />
+                        <b>  {record.postedBy.name}</b>
+                      </span>{"  "}
+                      <i>  {record.text}</i>
                     </h6>
                   );
                 })}

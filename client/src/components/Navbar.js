@@ -14,14 +14,22 @@ const NavBar = () =>{
         <li>
           <Link to="/CreatePost">Create Post</Link>
         </li>,
-        <li><button type="button" className="btn red" 
-        onClick={() =>{
-           localStorage.clear();
-           dispatch({ type: "CLEAR" });
-           history('/login')
-        }}>
-          Logout
-        </button></li>
+        <li>
+          <Link to="/Explore">Explore</Link>
+        </li>,
+        <li>
+          <button
+            type="button"
+            className="btn red"
+            onClick={() => {
+              localStorage.clear();
+              dispatch({ type: "CLEAR" });
+              history("/login");
+            }}
+          >
+            Logout
+          </button>
+        </li>,
       ];
     }else
     {

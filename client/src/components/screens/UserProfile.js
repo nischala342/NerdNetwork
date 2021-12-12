@@ -1,95 +1,177 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
 import { useParams } from "react-router-dom";
+
 const Profile = () => {
-  //const [mypics, setPics] = useState([]); 
-  const [userProfile, setProfile] = useState(null); 
+  const [userProfile, setProfile] = useState(null);
   const { state, dispatch } = useContext(UserContext);
-  const {userid} = useParams()
-  console.log(userid)
+  const { userid } = useParams();
+  const [showfollow, setShowFollow] = useState(
+    state ? !state.connectees.includes(userid) : true
+  );
+
   useEffect(() => {
-    fetch("/user/${userid}", {
+    fetch(`/user/${userid}`, {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       },
     })
       .then((res) => res.json())
       .then((result) => {
-        console.log(result);
-        //setPics(result.mypost);
-        setProfile(result)
+        //console.log(result)
+
+        setProfile(result);
       });
-  }, []); 
+  }, []);
+
+
+  const followUser = () => {
+    fetch("/follow", {
+      method: "put",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+      body: JSON.stringify({
+        followId: userid,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        dispatch({
+          type: "UPDATE",
+          payload: { connectees: data.connectees, connectors: data.connectors },
+        });
+        localStorage.setItem("user", JSON.stringify(data));
+        setProfile((prevState) => {
+          return {
+            ...prevState,
+            user: {
+              ...prevState.user,
+              connectors: [...prevState.user.connectors, data._id],
+            },
+          };
+        });
+        setShowFollow(false);
+      });
+  };
+
+  const unfollowUser = () => {
+    fetch("/unfollow", {
+      method: "put",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+      body: JSON.stringify({
+        unfollowId: userid,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        dispatch({
+          type: "UPDATE",
+          payload: { connectees: data.connectees, connectors: data.connectors },
+        });
+        localStorage.setItem("user", JSON.stringify(data));
+
+        setProfile((prevState) => {
+          const newFollower = prevState.user.connectors.filter(
+            (item) => item != data._id
+          );
+          return {
+            ...prevState,
+            user: {
+              ...prevState.user,
+              connectors: newFollower,
+            },
+          };
+        });
+        setShowFollow(true);
+      });
+  };
+
   return (
     <>
-    {userProfile ? 
-    
-    <div style={{ maxWidth: "550px", margin: "0px auto" }}>
-      <div
-        style={{
-          margin: "18px 0px",
-          borderBottom: "1px solid grey",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-          }}
-        >
-          <div>
-            <img
-              src="https://static.remove.bg/remove-bg-web/a76316286d09b12be1ebda3b400e3f44716c24d0/assets/start-1abfb4fe2980eabfbbaaa4365a0692539f7cd2725f324f904565a9a744f8e214.jpg"
-              style={{ width: "160px", height: "160px", borderRadius: "80px" }}
-            />
-          </div>
-          <div>
-            
-            <h4>{userProfile.user.name}</h4>
-            <h5>{userProfile.user.email}</h5>
+      {userProfile ? (
+        <div style={{ maxWidth: "550px", margin: "0px auto" }}>
+          <div
+            style={{
+              margin: "18px 0px",
+              borderBottom: "1px solid grey",
+            }}
+          >
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
-                width: "108%",
+                justifyContent: "space-around",
               }}
             >
-              <h6>{userProfile.posts}</h6>
-              <h6>followers</h6>
-              <h6>following</h6>
+              <div>
+                <img
+                  src={userProfile.user.pic}
+                  style={{
+                    width: "160px",
+                    height: "160px",
+                    borderRadius: "80px",
+                  }}
+                />
+              </div>
+              <div>
+                <h4>{userProfile.user.name}</h4>
+                <h5>{userProfile.user.email}</h5>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "108%",
+                  }}
+                >
+                  <h6>{userProfile.posts.length}posts</h6>
+                  <h6>{userProfile.user.connectors.length}connectors</h6>
+                  <h6>{userProfile.user.connectees.length}connectees</h6>
+                </div>
+              </div><br/>
+              {showfollow ? (
+                <button
+                  style={{
+                    margin: "10px",
+                  }}
+                  className="btn waves-effect waves-light #64b5f6 blue darken-1"
+                  onClick={() => followUser()}
+                >
+                  Connect
+                </button>
+              ) : (
+                <button
+                  style={{
+                    margin: "10px",
+                  }}
+                  className="btn waves-effect waves-light #64b5f6 blue darken-1"
+                  onClick={() => unfollowUser()}
+                >
+                  Disconnect
+                </button>
+              )}
             </div>
           </div>
-        </div>
-
-        <div className="file-field input-field" style={{ margin: "10px" }}>
-          <div className="btn #64b5f6 blue darken-1">
-            <span>Update pic</span>
-            <input type="file" />
+          <div className="gallery">
+            {userProfile.posts.map((item) => {
+              return (
+                <img
+                  key={item._id}
+                  className="item"
+                  src={item.photo}
+                  alt={item.title}
+                  style={{ width: "160px", height: "160px" }}
+                />
+              );
+            })}
           </div>
-          <div className="file-path-wrapper">
-            <input className="file-path validate" type="text" />
-          </div>
         </div>
-      </div>
-      <div className="gallery">
-        {
-        userProfile.posts.map((item) => {
-          return (
-            <img
-              key={item._id}
-              className="item"
-              src={item.photo}
-              alt={item.title}
-              style={{ width: "160px", height: "160px" }}
-            />
-          );
-        })}
-      </div>
-    </div>
-    
-    
-    : <h2>loading.....</h2>}
-    
+      ) : (
+        <h2>loading.....</h2>
+      )}
     </>
   );
 };
