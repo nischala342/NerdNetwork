@@ -1,19 +1,23 @@
-import React,{useContext, useEffect, useState} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
+import { useParams } from "react-router-dom";
 const Profile = () => {
-  const[mypics,setPics] = useState([])
-  const {state,dispatch} = useContext(UserContext)
+  const [mypics, setPics] = useState([]); 
+  const { state, dispatch } = useContext(UserContext);
+  const {userid} = useParams()
+  console.log(userid)
   useEffect(() => {
-    fetch('/myposts', {
-      headers:{
-        "Authorization" : "Bearer "+localStorage.getItem("jwt")
-      }      
-    }).then(res => res.json())
-    .then(result =>{
-      console.log(result)
-      setPics(result.mypost)
+    fetch("/user/${userid}", {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
     })
-  },[])
+      .then((res) => res.json())
+      .then((result) => {
+        console.log(result);
+        setPics(result.mypost);
+      });
+  }, []); 
   return (
     <div style={{ maxWidth: "550px", margin: "0px auto" }}>
       <div
@@ -35,7 +39,7 @@ const Profile = () => {
             />
           </div>
           <div>
-            <h4>{state? state.name:"loading"}</h4>
+            <h4>{state ? state.name : "loading"}</h4>
             <h5>email</h5>
             <div
               style={{
@@ -69,7 +73,7 @@ const Profile = () => {
               className="item"
               src={item.photo}
               alt={item.title}
-               style={{ width: "160px", height: "160px"}}
+              style={{ width: "160px", height: "160px" }}
             />
           );
         })}
@@ -78,4 +82,4 @@ const Profile = () => {
   );
 };
 
-export default Profile
+export default Profile;
