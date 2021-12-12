@@ -2,7 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
 import { useParams } from "react-router-dom";
 const Profile = () => {
-  const [mypics, setPics] = useState([]); 
+  //const [mypics, setPics] = useState([]); 
+  const [userProfile, setProfile] = useState(null); 
   const { state, dispatch } = useContext(UserContext);
   const {userid} = useParams()
   console.log(userid)
@@ -15,10 +16,14 @@ const Profile = () => {
       .then((res) => res.json())
       .then((result) => {
         console.log(result);
-        setPics(result.mypost);
+        //setPics(result.mypost);
+        setProfile(result)
       });
   }, []); 
   return (
+    <>
+    {userProfile ? 
+    
     <div style={{ maxWidth: "550px", margin: "0px auto" }}>
       <div
         style={{
@@ -39,8 +44,9 @@ const Profile = () => {
             />
           </div>
           <div>
-            <h4>{state ? state.name : "loading"}</h4>
-            <h5>email</h5>
+            
+            <h4>{userProfile.user.name}</h4>
+            <h5>{userProfile.user.email}</h5>
             <div
               style={{
                 display: "flex",
@@ -48,7 +54,7 @@ const Profile = () => {
                 width: "108%",
               }}
             >
-              <h6>posts</h6>
+              <h6>{userProfile.posts}</h6>
               <h6>followers</h6>
               <h6>following</h6>
             </div>
@@ -66,7 +72,8 @@ const Profile = () => {
         </div>
       </div>
       <div className="gallery">
-        {mypics.map((item) => {
+        {
+        userProfile.posts.map((item) => {
           return (
             <img
               key={item._id}
@@ -79,6 +86,11 @@ const Profile = () => {
         })}
       </div>
     </div>
+    
+    
+    : <h2>loading.....</h2>}
+    
+    </>
   );
 };
 

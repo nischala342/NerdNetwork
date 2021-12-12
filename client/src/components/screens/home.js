@@ -2,7 +2,7 @@ import React,{useState,useEffect, useContext} from 'react'
 import { UserContext } from '../../App'
 import {Link} from 'react-router-dom'
 import img from './signin-image.jpg'
-
+import {Link} from react-router-dom
 
 const Home  = () =>{
   const [data,setData] = useState([])  
