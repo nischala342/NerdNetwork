@@ -129,7 +129,7 @@ const Profile = () => {
                 >
                   <h6>{userProfile.posts.length}posts</h6>
                   <h6>{userProfile.user.connectors.length}connectors</h6>
-                  <h6>{userProfile.user.connectees.length}connectees</h6>
+                  <h6>{userProfile.user.connectees.length}connected</h6>
                 </div>
               </div><br/>
               {showfollow ? (

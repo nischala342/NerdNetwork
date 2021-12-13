@@ -88,7 +88,7 @@ const Profile = () => {
             >
               <h6>{mypics.length}posts</h6>
               <h6>{state ? state.connectors.length : "0"} connectors</h6>
-              <h6>{state ? state.connectees.length : "0"} connectees</h6>
+              <h6>{state ? state.connectees.length : "0"} connected</h6>
             </div>
           </div>
         </div>
